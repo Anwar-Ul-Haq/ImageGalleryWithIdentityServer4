@@ -1,4 +1,5 @@
-﻿using ImageGallery.API.Entities;
+﻿using IdentityServer4.AccessTokenValidation;
+using ImageGallery.API.Entities;
 using ImageGallery.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +25,14 @@ namespace ImageGallery.API
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddMvc();
+
+            
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "https://localhost:44379/";
+                    options.ApiName = "imagegalleryapi";
+                });
         
             // register the DbContext on the container, getting the connection string from
             // appSettings (note: use this during development; in a production environment,
@@ -35,7 +44,7 @@ namespace ImageGallery.API
             services.AddScoped<IGalleryRepository, GalleryRepository>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.s
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
             ILoggerFactory loggerFactory, GalleryContext galleryContext)
         {
@@ -56,6 +65,7 @@ namespace ImageGallery.API
                 });
             }
 
+            app.UseAuthentication();//middleware for  api authentication.
             app.UseStaticFiles();
 
             AutoMapper.Mapper.Initialize(cfg =>

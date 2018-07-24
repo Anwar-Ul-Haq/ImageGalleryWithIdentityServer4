@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using IdentityModel.Client;
@@ -45,6 +46,13 @@ namespace ImageGallery.Client.Controllers
 
                 return View(galleryIndexViewModel);
             }
+
+           else if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode== HttpStatusCode.Forbidden)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+
+
 
             throw new Exception($"A problem happened while calling the API: {response.ReasonPhrase}");
         }
